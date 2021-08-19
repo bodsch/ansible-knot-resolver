@@ -1,0 +1,35 @@
+---
+
+knot_resolver_support_ipv6: false
+
+knot_resolver_listener:
+  - name: localhost
+    interfaces:
+      - eth0
+    ips:
+      - '127.0.0.1'
+    port: 53
+    options:
+      tls: true
+  - name: blackbox
+    ips:
+      - '192.168.0.5'
+    port: 53
+    options:
+      tls: false
+      # kind: dns
+
+knot_resolver_service_ip4: ""
+knot_resolver_service_ip6: ""
+
+knot_resolver_prefix_ip4: ""
+knot_resolver_prefix_ip6: ""
+
+knot_resolver_instances: 2
+knot_resolver_cachesize: 10
+
+knot_resolver_internal_domain:
+  domains:
+    - 'molecule.internal'
+
+...

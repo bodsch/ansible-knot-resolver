@@ -1,0 +1,16 @@
+---
+
+# - name: test
+#   set_fact:
+#     test: "{{ knot_resolver_listener | resolver_listener }}"
+
+- name: configure Knot Resolver service
+  template:
+    src: kresd.conf.j2
+    dest: /etc/knot-resolver/kresd.conf
+    mode: 0o664
+    backup: true
+  notify:
+    - restart knot resolver
+
+...

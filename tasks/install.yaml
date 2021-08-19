@@ -1,0 +1,10 @@
+---
+
+- name: install knot resolver packages
+  apt:
+    state: present
+    name:
+      - knot-resolver
+      - knot-dnsutils
+
+...

@@ -1,0 +1,10 @@
+---
+
+- name: start and enable Knot Resolver service
+  with_sequence: "count={{ knot_resolver_instances }}"
+  service:
+    name: "kresd@{{ item }}.service"
+    state: started
+    enabled: true
+
+...

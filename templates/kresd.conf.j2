@@ -1,0 +1,77 @@
+-- log_level('debug')
+-- log_target('syslog')
+
+{% if knot_resolver_support_ipv6 %}
+net.ipv6 = true
+{% else %}
+net.ipv6 = false
+{% endif %}
+
+-- listener
+{% if knot_resolver_listener is defined and
+      knot_resolver_listener | count > 0 %}
+{% for listener in knot_resolver_listener %}
+net.listen({{ listener | resolver_listener }})
+{% endfor %}
+{%- endif %}
+-- listener
+
+-- user()
+
+{%- if knot_resolver_support_ipv6 %}
+net.listen('::1', 53, { kind = 'dns', freebind = true })
+net.listen('::1', 853, { kind = 'tls', freebind = true })
+{% endif %}
+
+{%- if knot_resolver_service_ip4 is defined and
+    knot_resolver_service_ip4 | length > 0 %}
+net.listen('{{ knot_resolver_service_ip4 }}', 53, { kind = 'dns' })
+net.listen('{{ knot_resolver_service_ip4 }}', 853, { kind = 'tls' })
+{% endif %}
+
+modules = {
+  'hints > iterate',  -- Load /etc/hosts and allow custom root hints
+  'stats',            -- Track internal statistics
+  'predict',          -- Prefetch expiring/frequent records
+}
+modules.list()
+
+cache.size = {{ knot_resolver_cachesize }} * MB
+
+{%- if knot_resolver_prefix_ip4 is defined and
+    knot_resolver_prefix_ip4 | length > 0 %}
+modules.load('view')
+view:addr('127.0.0.0/8', policy.all(policy.PASS))
+view:addr('{{ knot_resolver_prefix_ip4 }}', policy.all(policy.PASS))
+view:addr('0.0.0.0/0', policy.all(policy.DROP))
+{% endif %}
+
+{%- if knot_resolver_support_ipv6 and
+    knot_resolver_prefix_ip6 is defined and
+    knot_resolver_prefix_ip6 | length > 0 %}
+modules.load('view')
+view:addr('::1/128', policy.all(policy.PASS))
+view:addr('{{ knot_resolver_prefix_ip6 }}', policy.all(policy.PASS))
+view:addr('::/0', policy.all(policy.DROP))
+{% endif %}
+
+policy.add(
+    policy.suffix(
+        policy.REQTRACE, policy.todnames({'.'})
+    )
+)
+
+{% if knot_resolver_internal_domain is defined and
+    knot_resolver_internal_domain | length > 0 %}
+-- define list of internal-only domains
+internalDomains = policy.todnames({ '{{ knot_resolver_internal_domain.domains | join("', '") }}' })
+
+-- forward only queries for names under domain example.com to a single IP address
+policy.add(
+    policy.suffix(
+        policy.FORWARD('127.0.0.1@5353'),
+        internalDomains
+    )
+)
+
+{% endif %}
