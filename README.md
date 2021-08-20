@@ -83,7 +83,7 @@ knot_resolver_views:
 
 ## Author and License
 
-  - Bodo Schulz
+- Bodo Schulz
 
 ## License
 
