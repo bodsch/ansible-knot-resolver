@@ -1,7 +1,7 @@
 ---
 
 - name: install knot resolver packages
-  apt:
+  package:
     state: present
     name:
       - knot-resolver
