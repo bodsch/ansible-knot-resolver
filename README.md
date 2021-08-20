@@ -31,9 +31,55 @@ Tested on
 ### default
 
 ```yaml
+knot_resolver_support_ipv6: false
 
+knot_resolver_listener: []
+
+knot_resolver_systemd_instances: 2
+knot_resolver_cachesize: 10
+
+knot_resolver_internal_domain: []
+
+knot_resolver_views: []
 ```
 
+### listener
+
+```yaml
+knot_resolver_listener:
+  - name: localhost
+    interfaces:
+      - eth0
+    ips:
+      - '127.0.0.1'
+    port: 53
+    options:
+      tls: false
+```
+
+
+### internal domains
+
+```yaml
+knot_resolver_internal_domain:
+  - domains:
+      - 'molecule.lan'
+      - 'matrix.lan'
+      - '0.172.in-addr.arpa'
+    policy:
+      stub: '127.0.0.1@5353'
+```
+
+### views
+
+```yaml
+knot_resolver_views:
+  - pass:
+      - '127.0.0.0/8'
+      - '192.168.0.0/24'
+  - drop:
+      - '0.0.0.0/0'
+```
 
 ## Author and License
 

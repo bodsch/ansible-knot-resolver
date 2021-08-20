@@ -1,7 +1,7 @@
 ---
 
 - name: restart knot resolver
-  with_sequence: "count={{ knot_resolver_instances }}"
+  with_sequence: "count={{ knot_resolver_systemd_instances }}"
   service:
     name: "kresd@{{ item }}.service"
     state: restarted

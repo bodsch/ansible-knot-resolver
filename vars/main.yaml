@@ -1,0 +1,6 @@
+---
+
+knot_resolver_owner: knot-resolver
+knot_resolver_group: knot-resolver
+
+...
