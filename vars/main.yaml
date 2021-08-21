@@ -3,4 +3,9 @@
 knot_resolver_owner: knot-resolver
 knot_resolver_group: knot-resolver
 
+knot_resolver_dependencies: []
+
+knot_resolver_packages:
+  - knot-resolver
+
 ...

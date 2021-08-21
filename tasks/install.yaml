@@ -2,9 +2,7 @@
 
 - name: install knot resolver packages
   package:
+    name: "{{ knot_resolver_packages }}"
     state: present
-    name:
-      - knot-resolver
-      - knot-dnsutils
 
 ...

@@ -3,6 +3,6 @@
 - name: knot
   src: https://github.com/bodsch/ansible-knot.git
   scm: git
-  version: development
+  version: 1.0.0
 
 ...
