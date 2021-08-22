@@ -67,7 +67,7 @@ def test_packages(host):
 ])
 def test_directories(host, dirs):
     distribution = host.system_info.distribution
-    release = host.system_info.release
+    # release = host.system_info.release
 
     if distribution in ['ol', 'centos']:
         dirs = dirs.replace("/lib/", "/lib64/")
