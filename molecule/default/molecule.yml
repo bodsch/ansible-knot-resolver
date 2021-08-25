@@ -27,7 +27,7 @@ platforms:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       # needs only by ubuntu 20.04
-      - /var/lib/docker/overlay2:/var/lib/docker/overlay2:rw
+      # - /var/lib/docker/overlay2:/var/lib/docker/overlay2:rw
 
 provisioner:
   name: ansible
@@ -38,7 +38,6 @@ provisioner:
     defaults:
       deprecation_warnings: True
       stdout_callback: yaml
-      # remote_tmp: /tmp/ansible-${USER}
 
 scenario:
   test_sequence:

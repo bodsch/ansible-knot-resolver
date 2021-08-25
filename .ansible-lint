@@ -7,6 +7,6 @@ exclude_paths:
   - .github
   - molecule
 
-parseable: true
-quiet: true
-listrules: false
+#parseable: true
+#quiet: true
+#listrules: false
