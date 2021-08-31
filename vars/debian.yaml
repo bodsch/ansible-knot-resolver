@@ -1,5 +1,8 @@
 ---
 
+knot_resolver_dependencies:
+  - gpg
+
 knot_resolver_packages:
   - knot-resolver
   - knot-dnsutils
