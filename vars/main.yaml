@@ -3,6 +3,11 @@
 knot_resolver_owner: knot-resolver
 knot_resolver_group: knot-resolver
 
+knot_resolver_defaults_cache:
+  directory: /var/cache/knot-resolver
+  max_ttl: 3600
+  size: 200
+
 knot_resolver_dependencies: []
 
 knot_resolver_packages:

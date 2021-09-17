@@ -1,5 +1,9 @@
+-- {{ ansible_managed }}
+--
+-- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
+
 -- log_level('debug')
--- log_target('syslog')
+log_target('syslog')
 
 user(
   '{{ knot_resolver_owner }}',
@@ -37,7 +41,27 @@ modules = {
 }
 -- modules.list()
 
-cache.size = {{ knot_resolver_cachesize }} * MB
+cache.open( {{ knot_resolver_cache.size }} * MB, 'lmdb://{{ knot_resolver_cache.directory }}')
+
+{% if knot_resolver_cache.max_ttl is defined %}
+cache.max_ttl({{ knot_resolver_cache.max_ttl | int }})
+{% endif %}
+
+{% if knot_resolver_enable_prometheus is defined and
+      knot_resolver_enable_prometheus %}
+modules.load('http')
+-- Set Prometheus namespace
+http.prometheus.namespace = 'resolver_'
+http.config()
+{% endif %}
+
+
+-- Prefetch learning
+predict.config({
+  window = 30, -- 30 minutes sampling window
+  period = 24*(60/15) -- track last 24 hours
+})
+
 
 {% if knot_resolver_views is defined and
     knot_resolver_views | length > 0 %}

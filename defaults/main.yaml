@@ -4,8 +4,14 @@ knot_resolver_support_ipv6: false
 
 knot_resolver_listener: []
 
+knot_resolver_cache:
+  directory: /var/cache/knot-resolver
+  max_ttl: 3600
+  size: 200
+
+knot_resolver_enable_prometheus: true
+
 knot_resolver_systemd_instances: 2
-knot_resolver_cachesize: 10
 
 knot_resolver_internal_domain: []
 

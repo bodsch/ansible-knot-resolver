@@ -49,6 +49,8 @@ class FilterModule(object):
                     # -- {{ k }} - {{ v }}
                     if k.lower() == 'tls' and v:
                         _options = ["{ tls = true }"]
+                    elif k.lower() == 'kind' and v:
+                        _options = [ f"{{ {k.lower()} = '{v}' }}" ]
 
             _listen = ["{ " + ", ".join(_interfaces + _ips) + " }"]
             result = ", ".join(_listen + _port + _options)

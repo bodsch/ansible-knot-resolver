@@ -5,4 +5,7 @@
     name: "{{ knot_resolver_packages }}"
     state: present
 
+# useradd --system --defaults --home-dir /var/lib/knot-resolver --shell /sbin/nologin --groups kresd  kresd
+# useradd --system --home-dir /var/lib/knot-resolver --shell /sbin/nologin --gid kresd  kresd
+# setcap 'cap_net_bind_service,cap_setpcap=+ep' /usr/sbin/kresd
 ...
