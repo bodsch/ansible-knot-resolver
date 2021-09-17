@@ -3,6 +3,7 @@
 knot_resolver_dependencies:
   - gpg
   - xz-utils
+  - iproute2
 
 knot_resolver_packages:
   - knot-dnsutils

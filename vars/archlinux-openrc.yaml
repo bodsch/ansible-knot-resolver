@@ -1,3 +1,7 @@
 ---
 
+knot_resolver_dependencies:
+  - lua51-http
+  - lua51-cqueues
+
 ...
