@@ -2,8 +2,14 @@
 --
 -- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
 
--- log_level('debug')
-log_target('syslog')
+{% if knot_resolver_log_level is defined and
+      knot_resolver_log_level | length > 0 %}
+log_level('{{ knot_resolver_log_level }}')
+{% endif %}
+{% if knot_resolver_log_target is defined and
+      knot_resolver_log_target | length > 0 %}
+log_target('{{ knot_resolver_log_target }}')
+{% endif %}
 
 user(
   '{{ knot_resolver_owner }}',

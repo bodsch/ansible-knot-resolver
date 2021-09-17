@@ -9,6 +9,9 @@ knot_resolver_cache:
   max_ttl: 3600
   size: 200
 
+knot_resolver_log_level: '' # info
+knot_resolver_log_target: syslog
+
 knot_resolver_enable_prometheus: true
 
 knot_resolver_systemd_instances: 2

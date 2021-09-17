@@ -32,7 +32,7 @@
 - name: merge cache configuration between defaults and custom
   set_fact:
     knot_resolver_cache: "{{ knot_resolver_defaults_cache |
-      merge_jails( knot_resolver_cache ) }}"
+      combine( knot_resolver_cache, recursive=True ) }}"
 
 - name: get latest system information
   setup:
