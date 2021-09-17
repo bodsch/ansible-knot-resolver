@@ -1,10 +1,6 @@
 ---
 
-# - name: test
-#   set_fact:
-#     test: "{{ knot_resolver_listener | resolver_listener }}"
-
-- name: configure Knot Resolver service
+- name: create knot resolver configuration
   template:
     src: kresd.conf.j2
     dest: /etc/knot-resolver/kresd.conf
