@@ -26,19 +26,7 @@
   when:
     - ansible_os_family | lower == 'debian'
 
-# - name: ubuntu
-#   block:
-#     - name: add knot ppa
-#       apt_repository:
-#         repo: ppa:cz.nic-labs/knot-dns-latest
-#         state: present
-#         update_cache: true
-#         validate_certs: false
-#   when:
-#     - ansible_distribution | lower == 'ubuntu'
-
 - block:
-    #
     - name: Import EPEL GPG key.
       rpm_key:
         key: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
