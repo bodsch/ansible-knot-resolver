@@ -1,10 +1,6 @@
 ---
 
-# - name: test
-#   set_fact:
-#     test: "{{ knot_resolver_listener | resolver_listener }}"
-
-- name: configure Knot Resolver service
+- name: create knot resolver configuration
   template:
     src: kresd.conf.j2
     dest: /etc/knot-resolver/kresd.conf
@@ -12,5 +8,24 @@
     backup: true
   notify:
     - restart knot resolver
+
+- block:
+    - name: create kres-cache-gc config
+      template:
+        src: init/openrc/conf.d/kres-cache-gc.j2
+        dest: /etc/conf.d/kres-cache-gc
+        mode: 0640
+      notify:
+        - restart kres-cache-gc
+
+    - name: create kresd config
+      template:
+        src: init/openrc/conf.d/kresd.j2
+        dest: /etc/conf.d/kresd
+        mode: 0640
+      notify:
+        - restart kresd
+  when:
+    - ansible_service_mgr | lower == 'openrc'
 
 ...

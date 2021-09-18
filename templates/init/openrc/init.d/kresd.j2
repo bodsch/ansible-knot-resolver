@@ -14,11 +14,11 @@ start_stop_daemon_args="--chdir=$cachedir --wait $wait"
 required_files="$cfgfile"
 
 depend() {
-	need net
-	before kres-cache-gc
+  need net
+  before kres-cache-gc
 }
 
 start_pre() {
-	[ "$output_log" ] && checkpath -f -m 640 -o "$command_user" "$output_log"
-	checkpath -d -m 750 -o "$command_user" "$cachedir"
+  [ "$output_log" ] && checkpath -f -m 640 -o "$command_user" "$output_log"
+  checkpath -d -m 750 -o "$command_user" "$cachedir"
 }

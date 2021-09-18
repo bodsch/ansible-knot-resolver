@@ -5,4 +5,22 @@
     name: "{{ knot_resolver_packages }}"
     state: present
 
+- block:
+    - name: create kres-cache-gc init script
+      template:
+        src: init/openrc/init.d/kres-cache-gc.j2
+        dest: /etc/init.d/kres-cache-gc
+        mode: 0755
+
+    - name: create kresd  init script
+      template:
+        src: init/openrc/init.d/kresd.j2
+        dest: /etc/init.d/kresd
+        mode: 0755
+  when:
+    - ansible_service_mgr | lower == 'openrc'
+
+# useradd --system --defaults --home-dir /var/lib/knot-resolver --shell /sbin/nologin --groups kresd  kresd
+# useradd --system --home-dir /var/lib/knot-resolver --shell /sbin/nologin --gid kresd  kresd
+# setcap 'cap_net_bind_service,cap_setpcap=+ep' /usr/sbin/kresd
 ...

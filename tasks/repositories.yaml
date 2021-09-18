@@ -2,35 +2,26 @@
 
 - name: debain based
   block:
-    - name: add apt signing key (debian)
-      become: true
-      apt_key:
-        id: 8C0A90B7DE9CAC3B4A7BD5798A0EFB02C84B1E9B
-        url: https://deb.knot-dns.cz/apt.gpg
+    - name: detect installed knot-resolver repository
+      stat:
+        path: /etc/apt/sources.list.d/knot-resolver-latest.list
+      register: knot_resolver_sources
 
-    - name: install official docker repositories for debian based
-      template:
-        src: apt_knot.list.j2
-        dest: /etc/apt/sources.list.d/knot.list
-        mode: 0644
-        owner: root
-        group: root
-  when:
-    - ansible_distribution | lower == 'debian'
+    - name: detect installed cznic-obs.gpg
+      stat:
+        path: /etc/apt/trusted.gpg.d/cznic-obs.gpg
+      register: knot_resolver_gpg
 
-- name: ubuntu
-  block:
-    - name: add knot ppa
-      apt_repository:
-        repo: ppa:cz.nic-labs/knot-dns-latest
-        state: present
-        update_cache: true
-        validate_certs: false
+    - name: install knot-resolver repositories
+      apt:
+        deb: https://secure.nic.cz/files/knot-resolver/knot-resolver-release.deb
+      when:
+        - not knot_resolver_sources.stat.exists
+        - not knot_resolver_gpg.stat.exists
   when:
-    - ansible_distribution | lower == 'ubuntu'
+    - ansible_os_family | lower == 'debian'
 
 - block:
-    #
     - name: Import EPEL GPG key.
       rpm_key:
         key: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}

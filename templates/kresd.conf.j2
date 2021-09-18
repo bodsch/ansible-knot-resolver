@@ -1,5 +1,15 @@
--- log_level('debug')
--- log_target('syslog')
+-- {{ ansible_managed }}
+--
+-- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
+
+{% if knot_resolver_log_level is defined and
+      knot_resolver_log_level | length > 0 %}
+log_level('{{ knot_resolver_log_level }}')
+{% endif %}
+{% if knot_resolver_log_target is defined and
+      knot_resolver_log_target | length > 0 %}
+log_target('{{ knot_resolver_log_target }}')
+{% endif %}
 
 user(
   '{{ knot_resolver_owner }}',
@@ -30,14 +40,34 @@ net.listen('{{ knot_resolver_service_ip4 }}', 53, { kind = 'dns' })
 net.listen('{{ knot_resolver_service_ip4 }}', 853, { kind = 'tls' })
 {% endif %}
 
+-- Load useful modules
 modules = {
-  'hints > iterate',  -- Load /etc/hosts and allow custom root hints
-  'stats',            -- Track internal statistics
-  'predict',          -- Prefetch expiring/frequent records
+   'stats',                  -- Track internal statistics
+   'predict',                -- Prefetch expiring/frequent records
+   'serve_stale < cache',
+   'workarounds < iterate',
+   'hints > iterate',        -- Load /etc/hosts and allow custom root hints
 }
--- modules.list()
 
-cache.size = {{ knot_resolver_cachesize }} * MB
+cache.open( {{ knot_resolver_cache.size }} * MB, 'lmdb://{{ knot_resolver_cache.directory }}')
+
+{% if knot_resolver_cache.max_ttl is defined %}
+cache.max_ttl({{ knot_resolver_cache.max_ttl | int }})
+{% endif %}
+
+{% if knot_resolver_enable_prometheus is defined and
+      knot_resolver_enable_prometheus %}
+modules.load('http')
+-- Set Prometheus namespace
+http.prometheus.namespace = 'resolver_'
+http.config()
+{% endif %}
+
+-- Prefetch learning
+predict.config({
+  window = 90,        -- 90 minutes sampling window
+  period = 48*(60/15) -- track last 48 hours
+})
 
 {% if knot_resolver_views is defined and
     knot_resolver_views | length > 0 %}
@@ -60,11 +90,11 @@ view:addr('{{ ip }}', policy.all(policy.DROP))
 {% endfor %}
 {% endif %}
 
-policy.add(
-    policy.suffix(
-        policy.REQTRACE, policy.todnames({'.'})
-    )
-)
+-- policy.add(
+--   policy.suffix(
+--     policy.REQTRACE, policy.todnames({'.'})
+--   )
+-- )
 
 {% if knot_resolver_internal_domain is defined and
     knot_resolver_internal_domain | length > 0 %}
@@ -83,3 +113,10 @@ policy.add(
 )
 {% endfor %}
 {% endif %}
+
+-- Block Firefox DoH
+policy.add(
+  policy.suffix(
+    policy.DENY, { todname('use-application-dns.net') }
+  )
+)
