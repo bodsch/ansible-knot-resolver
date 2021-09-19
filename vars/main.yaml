@@ -1,7 +1,7 @@
 ---
 
-knot_resolver_owner: kresd
-knot_resolver_group: kresd
+knot_resolver_owner: knot-resolver
+knot_resolver_group: knot-resolver
 
 knot_resolver_defaults_cache:
   directory: /var/cache/knot-resolver
