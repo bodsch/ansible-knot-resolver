@@ -29,8 +29,8 @@
     name: "{{ knot_resolver_dependencies }}"
     state: present
   when:
-    - knot_resolver_dependecies is defined
-    - knot_resolver_dependecies | count > 0
+    - knot_resolver_dependencies is defined
+    - knot_resolver_dependencies | count > 0
 
 - name: merge cache configuration between defaults and custom
   set_fact:
