@@ -69,7 +69,7 @@ def test_directories(host, dirs):
     distribution = host.system_info.distribution
     # release = host.system_info.release
 
-    if distribution in ['ol', 'centos']:
+    if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         dirs = dirs.replace("/lib/", "/lib64/")
 
     d = host.file(dirs)
