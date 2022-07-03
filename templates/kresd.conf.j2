@@ -3,13 +3,13 @@
 --
 -- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
 
-{% if knot_resolver_log_level is defined and
-      knot_resolver_log_level | length > 0 %}
-log_level('{{ knot_resolver_log_level }}')
+{% if knot_resolver_log.level is defined and
+      knot_resolver_log.level | length > 0 %}
+log_level('{{ knot_resolver_log.level }}')
 {% endif %}
-{% if knot_resolver_log_target is defined and
-      knot_resolver_log_target | length > 0 %}
-log_target('{{ knot_resolver_log_target }}')
+{% if knot_resolver_log.target is defined and
+      knot_resolver_log.target | length > 0 %}
+log_target('{{ knot_resolver_log.target }}')
 {% endif %}
 
 user(
@@ -43,11 +43,11 @@ net.listen('{{ knot_resolver_service_ip4 }}', 853, { kind = 'tls' })
 
 -- Load useful modules
 modules = {
-   'stats',                  -- Track internal statistics
-   'predict',                -- Prefetch expiring/frequent records
-   'serve_stale < cache',
-   'workarounds < iterate',
-   'hints > iterate',        -- Load /etc/hosts and allow custom root hints
+  'stats',                  -- Track internal statistics
+  'predict',                -- Prefetch expiring/frequent records
+  'serve_stale < cache',
+  'workarounds < iterate',
+  'hints > iterate',        -- Load /etc/hosts and allow custom root hints
 }
 
 -- cache config
@@ -57,6 +57,15 @@ cache.min_ttl({{ knot_resolver_cache.min_ttl | int }})
 {% endif %}
 {% if knot_resolver_cache.max_ttl is defined %}
 cache.max_ttl({{ knot_resolver_cache.max_ttl | int }})
+{% endif %}
+
+
+{% if knot_resolver_log.level == "debug" %}
+policy.add(
+  policy.all(
+    policy.DEBUG_ALWAYS
+  )
+)
 {% endif %}
 
 {% if knot_resolver_enable_prometheus is defined and
@@ -110,21 +119,26 @@ view:addr('{{ ip }}', policy.all(policy.DROP))
 internal_domains = policy.todnames({ '{{ domain.domains | join("', '") }}' })
 
 policy.add(
-    policy.suffix(
-        policy.FLAGS(
-          {'NO_CACHE', 'NO_EDNS'}),
-          internal_domains
-    )
+  policy.suffix(
+    policy.FLAGS(
+      {'NO_CACHE', 'NO_EDNS'}
+    ),
+    internal_domains
+  )
 )
 policy.add(
-    policy.suffix(
+  policy.suffix(
     {% if domain.policy.forward is defined %}
-        policy.FORWARD('{{ domain.policy.forward | default('127.0.1.1@53') }}'),
+    policy.FORWARD(
+      '{{ domain.policy.forward | default('127.0.1.1@53') }}'
+    ),
     {% elif domain.policy.stub is defined %}
-        policy.STUB('{{ domain.policy.stub | default('127.0.1.1@53') }}'),
+    policy.STUB(
+      '{{ domain.policy.stub | default('127.0.1.1@53') }}'
+    ),
     {% endif %}
-        internal_domains
-    )
+    internal_domains
+  )
 )
   {% endfor %}
 {% endif %}

@@ -9,6 +9,10 @@ knot_resolver_defaults_cache:
   max_ttl: 3600
   size: 200
 
+knot_resolver_defaults_log:
+  level: '' # info
+  target: syslog
+
 knot_resolver_dependencies: []
 
 knot_resolver_packages:
