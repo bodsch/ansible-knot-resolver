@@ -5,6 +5,7 @@ knot_resolver_group: knot-resolver
 
 knot_resolver_defaults_cache:
   directory: /var/cache/knot-resolver
+  min_ttl: 120
   max_ttl: 3600
   size: 200
 

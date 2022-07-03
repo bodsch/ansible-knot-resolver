@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 -- {{ ansible_managed }}
 --
 -- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
@@ -24,9 +25,9 @@ net.ipv6 = false
 
 {% if knot_resolver_listener is defined and
       knot_resolver_listener | count > 0 %}
-{% for listener in knot_resolver_listener %}
+  {% for listener in knot_resolver_listener %}
 net.listen({{ listener | resolver_listener }})
-{% endfor %}
+  {% endfor %}
 {% endif %}
 
 {%- if knot_resolver_support_ipv6 %}
@@ -49,8 +50,11 @@ modules = {
    'hints > iterate',        -- Load /etc/hosts and allow custom root hints
 }
 
+-- cache config
 cache.open( {{ knot_resolver_cache.size }} * MB, 'lmdb://{{ knot_resolver_cache.directory }}')
-
+{% if knot_resolver_cache.min_ttl is defined %}
+cache.min_ttl({{ knot_resolver_cache.min_ttl | int }})
+{% endif %}
 {% if knot_resolver_cache.max_ttl is defined %}
 cache.max_ttl({{ knot_resolver_cache.max_ttl | int }})
 {% endif %}
@@ -72,22 +76,22 @@ predict.config({
 {% if knot_resolver_views is defined and
     knot_resolver_views | length > 0 %}
 modules.load('view')
-{% for view in knot_resolver_views %}
-{%- if view.pass  is defined and view.pass | count > 0%}
-{% for k,v in view.items() %}
-{% for ip in v %}
+  {% for view in knot_resolver_views %}
+    {% if view.pass  is defined and view.pass | count > 0%}
+      {% for k,v in view.items() %}
+        {% for ip in v %}
 view:addr('{{ ip }}', policy.all(policy.PASS))
-{% endfor %}
-{% endfor %}
-{% endif %}
-{% if view.drop  is defined and view.drop | count > 0%}
-{% for k,v in view.items() %}
-{% for ip in v %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+    {% if view.drop  is defined and view.drop | count > 0%}
+      {% for k,v in view.items() %}
+        {% for ip in v %}
 view:addr('{{ ip }}', policy.all(policy.DROP))
-{% endfor %}
-{% endfor %}
-{% endif %}
-{% endfor %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
 -- policy.add(
@@ -98,20 +102,31 @@ view:addr('{{ ip }}', policy.all(policy.DROP))
 
 {% if knot_resolver_internal_domain is defined and
     knot_resolver_internal_domain | length > 0 %}
+  {# https://knot-resolver.readthedocs.io/en/stable/modules-policy.html#replacing-part-of-the-dns-tree #}
 -- define list of internal-only domains
 -- forward only queries for names under domain example.com to a single IP address
-{% for domain in knot_resolver_internal_domain %}
+  {% for domain in knot_resolver_internal_domain %}
+
+internal_domains = policy.todnames({ '{{ domain.domains | join("', '") }}' })
+
 policy.add(
     policy.suffix(
-{% if domain.policy.forward is defined %}
-        policy.FORWARD('{{ domain.policy.forward | default('127.0.1.1@53') }}'),
-{% elif domain.policy.stub is defined %}
-        policy.STUB('{{ domain.policy.stub | default('127.0.1.1@53') }}'),
-{% endif %}
-        policy.todnames({ '{{ domain.domains | join("', '") }}' })
+        policy.FLAGS(
+          {'NO_CACHE', 'NO_EDNS'}),
+          internal_domains
     )
 )
-{% endfor %}
+policy.add(
+    policy.suffix(
+    {% if domain.policy.forward is defined %}
+        policy.FORWARD('{{ domain.policy.forward | default('127.0.1.1@53') }}'),
+    {% elif domain.policy.stub is defined %}
+        policy.STUB('{{ domain.policy.stub | default('127.0.1.1@53') }}'),
+    {% endif %}
+        internal_domains
+    )
+)
+  {% endfor %}
 {% endif %}
 
 -- Block Firefox DoH
