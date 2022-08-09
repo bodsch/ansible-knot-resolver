@@ -45,12 +45,32 @@ net.listen('{{ knot_resolver_service_ip4 }}', 853, { kind = 'tls' })
 modules = {
   'stats',                  -- Track internal statistics
   'predict',                -- Prefetch expiring/frequent records
+  'cache',
   'serve_stale < cache',
   'workarounds < iterate',
   'hints > iterate',        -- Load /etc/hosts and allow custom root hints
 }
 
--- cache config
+-- module configuration
+
+-- - stats
+
+-- - http
+{% if knot_resolver_prometheus.enabled %}
+modules.load('http')
+-- Set Prometheus namespace
+http.prometheus.namespace = '{{ knot_resolver_prometheus.namespace }}'
+http.config()
+{% endif %}
+
+-- - predict
+--   Prefetch learning
+predict.config({
+  window = {{ knot_resolver_predict.window }},        -- 90 minutes sampling window
+  period = {{ knot_resolver_predict.period }}*(60/15) -- track last 48 hours
+})
+
+-- - cache config
 cache.open( {{ knot_resolver_cache.size }} * MB, 'lmdb://{{ knot_resolver_cache.directory }}')
 {% if knot_resolver_cache.min_ttl is defined %}
 cache.min_ttl({{ knot_resolver_cache.min_ttl | int }})
@@ -59,7 +79,6 @@ cache.min_ttl({{ knot_resolver_cache.min_ttl | int }})
 cache.max_ttl({{ knot_resolver_cache.max_ttl | int }})
 {% endif %}
 
-
 {% if knot_resolver_log.level == "debug" %}
 policy.add(
   policy.all(
@@ -67,20 +86,6 @@ policy.add(
   )
 )
 {% endif %}
-
-{% if knot_resolver_enable_prometheus is defined and
-      knot_resolver_enable_prometheus %}
-modules.load('http')
--- Set Prometheus namespace
-http.prometheus.namespace = 'resolver_'
-http.config()
-{% endif %}
-
--- Prefetch learning
-predict.config({
-  window = 90,        -- 90 minutes sampling window
-  period = 48*(60/15) -- track last 48 hours
-})
 
 {% if knot_resolver_views is defined and
     knot_resolver_views | length > 0 %}

@@ -10,10 +10,11 @@ knot_resolver_cache:
   size: 200
   garbage_interval: 1000
 
-# knot_resolver_log_level: '' # info
-# knot_resolver_log_target: syslog
+knot_resolver_log: {}
 
-knot_resolver_enable_prometheus: true
+knot_resolver_prometheus: {}
+
+knot_resolver_predict: {}
 
 knot_resolver_systemd_instances: 2
 

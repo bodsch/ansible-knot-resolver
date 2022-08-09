@@ -1,10 +1,12 @@
 # Configuration for /etc/init.d/kresd
 
 # Config file path.
-#cfgfile="/etc/knot-resolver/kresd.conf"
+cfgfile="/etc/knot-resolver/kresd.conf"
+
+command_user="{{ knot_resolver_owner }}:{{ knot_resolver_group }}"
 
 # Cache (working) directory.
-#cachedir="/var/cache/knot-resolver"
+cachedir="{{ knot_resolver_cache.directory }}"
 
 # A process which will be used to log the standard output from the kresd
 # process. Default is logger(1) which redirects the output to syslog.
