@@ -6,6 +6,5 @@ knot_resolver_group: kresd
 knot_resolver_dependencies:
   - lua51-http
   - lua51-cqueues
-  - iproute2
 
 ...

@@ -1,13 +1,18 @@
 ---
 
-- include_tasks: prepare.yaml
+- name: prepare
+  include_tasks: prepare.yaml
 
-- include_tasks: repositories.yaml
+- name: repositories
+  include_tasks: repositories.yaml
 
-- include_tasks: install.yaml
+- name: install
+  include_tasks: install.yaml
 
-- include_tasks: configure.yaml
+- name: configure
+  include_tasks: configure.yaml
 
-- include_tasks: service.yaml
+- name: service
+  include_tasks: service.yaml
 
 ...
