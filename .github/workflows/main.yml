@@ -10,6 +10,8 @@ on:
       - "code linter"
     branches:
       - main
+      - feature/*
+      - fix/*
     types:
       - completed
 
