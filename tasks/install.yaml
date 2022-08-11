@@ -20,7 +20,12 @@
   when:
     - ansible_service_mgr | lower == 'openrc'
 
-# useradd --system --defaults --home-dir /var/lib/knot-resolver --shell /sbin/nologin --groups kresd  kresd
-# useradd --system --home-dir /var/lib/knot-resolver --shell /sbin/nologin --gid kresd  kresd
-# setcap 'cap_net_bind_service,cap_setpcap=+ep' /usr/sbin/kresd
+- name: update trusted-key
+  kdig:
+    root_dns: "k.root-servers.net"
+    key_signing_key: 257
+    trust_keyfile: /etc/trusted-key.key
+  notify:
+    - restart kresd
+
 ...
