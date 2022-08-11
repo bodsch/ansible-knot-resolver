@@ -24,10 +24,7 @@ Tested on
 * Debian based
     - Debian 10 / 11
     - Ubuntu 20.04
-* RedHat based
-    - Alma Linux 8
-    - Rocky Linux 8
-    - OracleLinux 8
+
 
 ## configuration
 
