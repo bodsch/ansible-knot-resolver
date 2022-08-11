@@ -7,7 +7,7 @@
     mode: 0o664
     backup: true
   notify:
-    - restart knot resolver
+    - restart kresd
 
 - block:
     - name: create kres-cache-gc config

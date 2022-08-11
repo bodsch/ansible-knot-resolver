@@ -1,16 +1,16 @@
 ---
 
-- name: restart knot resolver (systemd)
+- name: restart kresd (systemd)
   with_sequence: "count={{ knot_resolver_systemd_instances }}"
-  listen: "restart knot resolver"
+  listen: "restart kresd"
   service:
     name: "kresd@{{ item }}.service"
     state: restarted
   when:
     - ansible_service_mgr | lower == 'systemd'
 
-- name: restart knot resolver (openrc)
-  listen: "restart knot resolver"
+- name: restart kresd (openrc)
+  listen: "restart kresd"
   service:
     name: kresd
     state: restarted

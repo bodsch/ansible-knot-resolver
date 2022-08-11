@@ -32,6 +32,26 @@
     - knot_resolver_dependencies is defined
     - knot_resolver_dependencies | count > 0
 
+- name: user and group handling
+  block:
+    - name: create kresd group
+      group:
+        name: "{{ knot_resolver_group }}"
+        state: present
+        system: true
+
+    - name: create kresd user
+      user:
+        name: "{{ knot_resolver_owner }}"
+        groups: "{{ knot_resolver_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: /nonexistent
+  when:
+    - knot_resolver_owner != "root"
+
 - name: merge knot_resolver configuration between defaults and custom
   set_fact:
     knot_resolver_cache: "{{ knot_resolver_defaults_cache | combine( knot_resolver_cache, recursive=True ) }}"
