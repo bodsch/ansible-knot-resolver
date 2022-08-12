@@ -17,6 +17,11 @@ user(
   '{{ knot_resolver_group }}'
 )
 
+-- trust_anchors.add_file('/var/lib/knot-resolver/root.key')
+-- trust_anchors.hold_down_time = 3 * day
+trust_anchors.refresh_time = 10 * sec
+trust_anchors.keep_removed = 2
+
 {% if knot_resolver_support_ipv6 %}
 net.ipv6 = true
 {% else %}
