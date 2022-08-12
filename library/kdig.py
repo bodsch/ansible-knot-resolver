@@ -95,14 +95,14 @@ class Kdig(object):
                 """
                     rename old trust file
                 """
-                date_string = time.strftime("%Y%m%d%H%M%S")
+                if os.path.isfile(self.trust_keyfile):
+                    date_string = time.strftime("%Y%m%d%H%M%S")
+                    _trust_keyfile_backup = f"{self.trust_keyfile}_{date_string}"
 
-                _trust_keyfile_backup = f"{self.trust_keyfile}_{date_string}"
-
-                os.rename(
-                    self.trust_keyfile,
-                    _trust_keyfile_backup
-                )
+                    os.rename(
+                        self.trust_keyfile,
+                        _trust_keyfile_backup
+                    )
 
                 with open(self.trust_keyfile, "w") as trust_keyfile:
                     trust_keyfile.write(dnskey)
