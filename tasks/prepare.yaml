@@ -1,7 +1,7 @@
 ---
 
 - name: include OS specific configuration
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:
@@ -21,11 +21,11 @@
       skip: true
 
 - name: update package cache
-  package:
+  ansible.builtin.package:
     update_cache: true
 
 - name: install dedendency
-  package:
+  ansible.builtin.package:
     name: "{{ knot_resolver_dependencies }}"
     state: present
   when:
@@ -33,15 +33,17 @@
     - knot_resolver_dependencies | count > 0
 
 - name: user and group handling
+  when:
+    - knot_resolver_owner != "root"
   block:
     - name: create kresd group
-      group:
+      ansible.builtin.group:
         name: "{{ knot_resolver_group }}"
         state: present
         system: true
 
     - name: create kresd user
-      user:
+      ansible.builtin.user:
         name: "{{ knot_resolver_owner }}"
         groups: "{{ knot_resolver_group }}"
         append: true
@@ -49,17 +51,15 @@
         system: true
         createhome: false
         home: /nonexistent
-  when:
-    - knot_resolver_owner != "root"
 
 - name: merge knot_resolver configuration between defaults and custom
-  set_fact:
-    knot_resolver_cache: "{{ knot_resolver_defaults_cache | combine( knot_resolver_cache, recursive=True ) }}"
-    knot_resolver_log: "{{ knot_resolver_defaults_log | combine( knot_resolver_log, recursive=True ) }}"
-    knot_resolver_prometheus: "{{ knot_resolver_defaults_prometheus | combine( knot_resolver_prometheus, recursive=True ) }}"
-    knot_resolver_predict: "{{ knot_resolver_defaults_predict | combine( knot_resolver_predict, recursive=True ) }}"
+  ansible.builtin.set_fact:
+    knot_resolver_cache: "{{ knot_resolver_defaults_cache | combine(knot_resolver_cache, recursive=True) }}"
+    knot_resolver_log: "{{ knot_resolver_defaults_log | combine(knot_resolver_log, recursive=True) }}"
+    knot_resolver_prometheus: "{{ knot_resolver_defaults_prometheus | combine(knot_resolver_prometheus, recursive=True) }}"
+    knot_resolver_predict: "{{ knot_resolver_defaults_predict | combine(knot_resolver_predict, recursive=True) }}"
 
 - name: get latest system information
-  setup:
+  ansible.builtin.setup:
 
 ...

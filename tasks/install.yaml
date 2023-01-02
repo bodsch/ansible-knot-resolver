@@ -1,24 +1,25 @@
 ---
 
 - name: install knot resolver packages
-  package:
+  ansible.builtin.package:
     name: "{{ knot_resolver_packages }}"
     state: present
 
-- block:
+- name: openrc
+  when:
+    - ansible_service_mgr | lower == 'openrc'
+  block:
     - name: create kres-cache-gc init script
-      template:
+      ansible.builtin.template:
         src: init/openrc/init.d/kres-cache-gc.j2
         dest: /etc/init.d/kres-cache-gc
         mode: 0755
 
     - name: create kresd  init script
-      template:
+      ansible.builtin.template:
         src: init/openrc/init.d/kresd.j2
         dest: /etc/init.d/kresd
         mode: 0755
-  when:
-    - ansible_service_mgr | lower == 'openrc'
 
 - name: update trusted-key
   kdig:

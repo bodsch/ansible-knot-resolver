@@ -1,18 +1,18 @@
 ---
 
 - name: prepare
-  include_tasks: prepare.yaml
+  ansible.builtin.include_tasks: prepare.yaml
 
 - name: repositories
-  include_tasks: repositories.yaml
+  ansible.builtin.include_tasks: repositories.yaml
 
 - name: install
-  include_tasks: install.yaml
+  ansible.builtin.include_tasks: install.yaml
 
 - name: configure
-  include_tasks: configure.yaml
+  ansible.builtin.include_tasks: configure.yaml
 
 - name: service
-  include_tasks: service.yaml
+  ansible.builtin.include_tasks: service.yaml
 
 ...

@@ -33,8 +33,4 @@
 
   roles:
     - role: syslog-ng
-    # - role: pacman
-    #   when:
-    #     - ansible_distribution | lower == 'archlinux' or
-    #       ansible_os_family | lower == 'artix linux'
     - role: knot
