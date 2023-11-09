@@ -24,8 +24,8 @@ Tested on
 
 * ArchLinux
 * Debian based
-    - Debian 10 / 11
-    - Ubuntu 20.04
+    - Debian 10 / 11 / 12
+    - Ubuntu 20.04 / 22.04
 
 
 ## configuration
@@ -91,4 +91,4 @@ knot_resolver_views:
 
 [Apache](LICENSE)
 
-`FREE SOFTWARE, HELL YEAH!`
+**FREE SOFTWARE, HELL YEAH!**
